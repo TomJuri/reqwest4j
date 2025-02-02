@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ReqwestUtils {
@@ -56,6 +57,6 @@ public class ReqwestUtils {
     public static native void init(String proxy, String user, String pass);
 
     public static native CompletableFuture<Response> fetch(String url, String method, byte[] body,
-                                                           Map<String, String> headers);
+                                                           Map<String, List<String>> headers);
 
 }

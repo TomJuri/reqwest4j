@@ -161,13 +161,32 @@ pub extern "system" fn Java_rocks_kavin_reqwest4j_ReqwestUtils_fetch(
                         let headers = env.new_object("java/util/HashMap", "()V", &[]).unwrap();
                         let headers: JMap = JMap::from_env(&mut env, &headers).unwrap();
 
-                        response_headers.iter().for_each(|(key, value)| {
-                            let key = env.new_string(key.as_str()).unwrap();
-                            let value = env.new_string(value.to_str().unwrap()).unwrap();
-                            headers
-                                .put(&mut env, &JObject::from(key), &JObject::from(value))
+                        // Group headers by name into a HashMap with vectors
+                        let mut grouped_headers: HashMap<String, Vec<String>> = HashMap::new();
+                        for (key, value) in response_headers.iter() {
+                            let key_str = key.as_str().to_string();
+                            let value_str = value.to_str().unwrap().to_string();
+                            grouped_headers.entry(key_str).or_default().push(value_str);
+                        }
+
+                        // Populate the Java map with ArrayLists for each header
+                        for (key, values) in grouped_headers {
+                            let jkey = env.new_string(&key).unwrap();
+                            // Create a new ArrayList
+                            let jlist = env.new_object("java/util/ArrayList", "()V", &[]).unwrap();
+                            for value in values {
+                                let jvalue = env.new_string(value).unwrap();
+                                env.call_method(
+                                    &jlist,
+                                    "add",
+                                    "(Ljava/lang/Object;)Z",
+                                    &[jvalue.into()],
+                                )
                                 .unwrap();
-                        });
+                            }
+                            // Put the key and list into the headers map
+                            headers.put(&mut env, &JObject::from(jkey), &jlist).unwrap();
+                        }
 
                         // return response to CompletableFuture
                         let response = env
