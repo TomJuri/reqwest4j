@@ -44,7 +44,7 @@ signing {
     sign publishing.publications
 }
 
-group = 'rocks.kavin'
+group = 'de.tomjuri'
 version = '1.0.14'
 
 publishing {
