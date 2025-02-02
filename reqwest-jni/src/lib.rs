@@ -180,7 +180,7 @@ pub extern "system" fn Java_rocks_kavin_reqwest4j_ReqwestUtils_fetch(
                                     &jlist,
                                     "add",
                                     "(Ljava/lang/Object;)Z",
-                                    &[jvalue.into()],
+                                    &[(&jvalue).into()],
                                 )
                                 .unwrap();
                             }
