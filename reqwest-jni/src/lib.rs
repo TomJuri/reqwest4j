@@ -20,7 +20,8 @@ pub extern "system" fn Java_rocks_kavin_reqwest4j_ReqwestUtils_init(
     pass: JString,
 ) {
     let builder = Client::builder()
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0");
+      .user_agent("Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0")
+      .redirect(reqwest::redirect::Policy::none());
 
     let builder = match env.get_string(&proxy) {
         Ok(proxy) => {
@@ -41,12 +42,10 @@ pub extern "system" fn Java_rocks_kavin_reqwest4j_ReqwestUtils_init(
     };
 
     let client = builder
-        // timeout for establishing connection
-        .connect_timeout(Duration::from_secs(10))
-        // timeout for entire request, till body is read
-        .timeout(Duration::from_secs(30))
-        .build()
-        .unwrap();
+      .connect_timeout(Duration::from_secs(10))
+      .timeout(Duration::from_secs(30))
+      .build()
+      .unwrap();
     CLIENT.set(client).unwrap();
     RUNTIME.set(Runtime::new().unwrap()).unwrap();
 }
